@@ -8,8 +8,6 @@ var session = require('express-session');
 var bodyParser = require('body-parser');
 var encoder = bodyParser.urlencoded();
 var bcrypt = require('bcrypt');
-hello
-var users = [];
 
 app.use(express.static(path.join(__dirname, 'publish')));
 app.use(express.static(path.join(__dirname, 'views')));
@@ -24,7 +22,7 @@ var database = mysql.createConnection({
     user: 'AppUser',
     password: 'Special888%',
     database: 'Study',
-    table: 'bach_users',
+    table: 'bachs_users',
 })
 var usersInfo = mysql.createConnection({
     host: '10.11.90.15',
@@ -46,10 +44,10 @@ usersInfo.connect((err) => { // This creates the connection
     else console.log('Table bach_users is connected!');
 });
 
-app.get('/abc',function(req,res){ 
-    res.sendFile(path.join(__dirname+'/abc.html')); 
-    //__dirname : It will resolve to your project folder. 
-}); 
+app.get('/abc',function(req,res){
+    res.sendFile(path.join(__dirname+'/abc.html'));
+    //__dirname : It will resolve to your project folder.
+});
 app.get('/count', function(req,res){
     var queryString = "SELECT countries_num FROM bach_countries WHERE continents = 'Asia'";
     database.query(queryString, function(err, result) {
@@ -71,18 +69,33 @@ app.get("/register", (req, res) => {
     res.render("register")
 })
 app.post('/register', async function(req, res){
-    try {
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        users.push({
-            id: Date.now().toString(),
-            name: req.body.username,
-            password: hashedPassword
-        });
-        // Redirect to a success page or send a response indicating success
-        res.send('User registered successfully!');
-    } catch {
-        res.redirect('/register');
-    }
+    var username = req.body.username;
+    var password = req.body.password;
+
+    // Hash the password
+    var hashedPassword = await bcrypt.hash(password, 10);
+
+    database.query("SELECT * FROM bach_users WHERE username = ? AND password = ?", [username, password], function (error, result, fields){
+        if (error) {
+            res.send("An error occurred");
+            console.error(error);
+        } else {
+            if (result.length > 0) {
+                res.redirect("/welcome");
+            } else {
+                res.send("No such user found");
+            }
+        }
+    });
+});
+
+// Place bodyParser middleware before route handlers
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.get('/welcome',function(req,res){
+    res.render('welcome');
 });
 
 
