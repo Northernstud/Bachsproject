@@ -71,6 +71,9 @@ app.get("/register", (req, res) => {
 app.post('/register', async function(req, res){
     var username = req.body.username;
     var password = req.body.password;
+    var track = req.body.track;
+    var grade = req.body.grade;
+
 
     // Hash the password
     var hashedPassword = await bcrypt.hash(password, 10);
@@ -81,12 +84,13 @@ app.post('/register', async function(req, res){
             console.error(error);
         } else {
             if (result.length > 0) {
-                res.redirect("/welcome");
+                res.render('welcome', {msg: username});
             } else {
                 res.send("No such user found");
             }
         }
     });
+    console.log(username, password);
 });
 
 // Place bodyParser middleware before route handlers
@@ -95,7 +99,8 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/welcome',function(req,res){
-    res.render('welcome');
+    var name = req.query.username;
+    res.render('welcome', {msg: name});
 });
 
 
