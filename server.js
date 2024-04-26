@@ -8,7 +8,7 @@ var session = require('express-session');
 var bodyParser = require('body-parser');
 var encoder = bodyParser.urlencoded();
 var bcrypt = require('bcrypt');
-
+hello
 var users = [];
 
 app.use(express.static(path.join(__dirname, 'publish')));
