@@ -15,6 +15,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.urlencoded({extended: 'false'}));
 app.use(express.json());
 app.set('view engine', 'ejs');
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 var database = mysql.createConnection({
     host: '10.11.90.15',
@@ -24,6 +27,7 @@ var database = mysql.createConnection({
     database: 'Study',
     table: 'bachs_users',
 })
+
 var usersInfo = mysql.createConnection({
     host: '10.11.90.15',
     port: '3306',
@@ -44,10 +48,19 @@ usersInfo.connect((err) => { // This creates the connection
     else console.log('Table bach_users is connected!');
 });
 
+// Challenge 1
+app.get('/',function(req,res){
+    res.sendFile(path.join(__dirname+'/publish/index.html'));
+    //__dirname : It will resolve to your project folder.
+});
+
+// Challenge 2
 app.get('/abc',function(req,res){
     res.sendFile(path.join(__dirname+'/abc.html'));
     //__dirname : It will resolve to your project folder.
 });
+
+// Challenge 3
 app.get('/count', function(req,res){
     var queryString = "SELECT countries_num FROM bach_countries WHERE continents = 'Asia'";
     database.query(queryString, function(err, result) {
@@ -58,13 +71,7 @@ app.get('/count', function(req,res){
     });
 });
 
-
-
-
-
-
-
-
+//Challenge 4 and 5
 app.get("/register", (req, res) => {
     res.render("register")
 })
@@ -78,13 +85,14 @@ app.post('/register', async function(req, res){
     // Hash the password
     var hashedPassword = await bcrypt.hash(password, 10);
 
-    database.query("SELECT * FROM bach_users WHERE username = ? AND password = ?", [username, password], function (error, result, fields){
+    database.query("SELECT * FROM bach_users WHERE username = ? AND password = ? AND track = ? AND grade = ?", [username, password, track, grade], function (error, result, fields){
         if (error) {
             res.send("An error occurred");
             console.error(error);
         } else {
             if (result.length > 0) {
                 res.render('welcome', {msg: username});
+                console.log(username, "just log in!")
             } else {
                 res.send("No such user found");
             }
@@ -93,16 +101,39 @@ app.post('/register', async function(req, res){
     console.log(username, password);
 });
 
-// Place bodyParser middleware before route handlers
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
 app.get('/welcome',function(req,res){
     var name = req.query.username;
     res.render('welcome', {msg: name});
 });
 
+//Challenge 6
+app.get('/query', function(req, res){
+    var query = "SELECT * FROM bach_users"
+    database.query(query, function (error, results){
+        if (error) {
+            res.send("An error occurred");
+            console.error(error);
+        }
+        else {
+            console.log(results);
+            res.render('query', {data: results});
+        }
+    })
+});
 
+app.post('/query', function(req, res){
+    var username = req.body.username;
+    var password = req.body.password;
+    var track = req.body.track;
+    var query = 'SELECT * FROM bach_users WHERE username = ? AND password = ? AND track = ?';
 
+    database.query(query, [username, password, track], function (error, result, fields){
+        if (error) {
+            res.send("An error occurred");
+            console.error(error);
+        } else {
+
+        }
+    })
+});
 app.listen(3008, () => console.log('Listenning at 3008'))

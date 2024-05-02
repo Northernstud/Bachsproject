@@ -6,24 +6,6 @@
     <title>Document</title>
 </head>
 <body>
-    <script>
-        if('geolocation' in navigator) {
-            console.log("geolocation is available");
-            navigator.geolocation.getCurrentPosition(position => {
-                var lat = position.coords.latitude;
-                var lon = position.coords.longitude;
-                document.getElementById('latitude').textContent = lat;
-                document.getElementById('longitude').textContent = lon;
-                //console.log(position);
-            });
-        }
-        else {
-            console.log("geolocation is not available");
-        }
-    </script>
     <p>Welcome to my Server side programming code</p>
-
-    <p>latitude: <span id = 'latitude'></span><br /></p>
-    <p>longitude: <span id = 'longitude'></span></p>
 </body>
 </html>
