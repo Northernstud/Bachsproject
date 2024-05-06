@@ -124,24 +124,7 @@ app.post('/query', async function(req, res){
     var username = req.body.username_query;
     var track = req.body.track_query;
     var grade = req.body.grade_query;
-    var query = 'SELECT * FROM bach_users WHERE username = ? AND track = ? AND grade = ?';
-    if (username == " ") {
-        var query_1 = '';
-    } else {
-        var query_1 = "username = ?"
-    }
-    if (track == " ") {
-        var query_2 = '';
-    } else {
-        var query_2 = " AND track = ?"
-    }
-    if (grade == " ") {
-        var query_3 = '';
-    } else {
-        var query_3 = " AND grade = ?"
-    }
-
-    var query = 'SELECT * FROM bach_users WHERE' + query_1 + "AND" + query_2 + "AND" + query_3;
+    var query = 'SELECT * FROM bach_users WHERE username = ? OR track = ? OR grade = ?';
 
     database.query(query, [username, track, grade], function (error, result, fields){
         if (error) {
@@ -153,4 +136,14 @@ app.post('/query', async function(req, res){
     })
     console.log(username, track, grade);
 });
+
+//Challenge 7
+
+app.get("/file", (req, res) => {
+    res.render("file");
+});
+
+
+
+
 app.listen(3008, () => console.log('Listenning at 3008'))
