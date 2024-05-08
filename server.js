@@ -8,6 +8,7 @@ var session = require('express-session');
 var bodyParser = require('body-parser');
 var encoder = bodyParser.urlencoded();
 var bcrypt = require('bcrypt');
+var multer  = require('multer')
 
 app.use(express.static(path.join(__dirname, 'publish')));
 app.use(express.static(path.join(__dirname, 'views')));
@@ -139,11 +140,13 @@ app.post('/query', async function(req, res){
 
 //Challenge 7
 
-app.get("/file", (req, res) => {
-    res.render("file");
+app.get('/upload',function(req,res){
+    res.render('file');
 });
 
-
-
+var upload = multer({ dest: 'public/' });
+app.post('/api/upload', upload.single('file'), function (req, res) {
+    res.send('Uploaded successfully!');
+});
 
 app.listen(3008, () => console.log('Listenning at 3008'))
