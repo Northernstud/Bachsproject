@@ -107,6 +107,48 @@ app.get('/welcome',function(req,res){
     res.render('welcome', {msg: name});
 });
 
+// add user into my database
+app.get("/signin", (req, res) => {
+    res.render("signInForm")
+})
+
+app.post('/signin', async function(req, res){
+    var username = req.body.username_in;
+    var password = req.body.password_in;
+    var track = req.body.track_in;
+    var grade = req.body.grade_in;
+
+
+    // Hash the password
+    var hashedPassword = await bcrypt.hash(password, 10);
+
+    database.query("SELECT * FROM bach_users WHERE username = ? AND password = ? AND track = ? AND grade = ?", [username, password, track, grade], function (error, result, fields){
+        if (error) {
+            res.send("An error occurred");
+            console.error(error);
+        } else {
+            if (result.length > 0) {
+                res.send("user exist");
+                console.log(username, "just log in!")
+            } else {
+                database.query("INSERT INTO bach_users VALUES (?, ?, ?, ?)", [username, password, track, grade],function (error, result, fields){
+                    if (error) {
+                        res.send("An error occurred");
+                        console.error(error);
+                    } else {
+                        if (result.length > 0) {
+                            res.render('newUser');
+                            console.log(username, "just Sign in!");
+                        }
+                    }
+                });
+            }
+        }
+    });
+    console.log(username, password);
+});
+
+
 //Challenge 6
 app.get('/query', function(req, res){
     var query = "SELECT * FROM bach_users"
@@ -137,6 +179,8 @@ app.post('/query', async function(req, res){
     })
     console.log(username, track, grade);
 });
+
+
 
 //Challenge 7
 
