@@ -26,7 +26,7 @@ var database = mysql.createConnection({
     user: 'AppUser',
     password: 'Special888%',
     database: 'Study',
-    table: 'bachs_users',
+    table: 'bach_users',
 })
 
 var usersInfo = mysql.createConnection({
@@ -73,6 +73,52 @@ app.get('/count', function(req,res){
 });
 
 //Challenge 4 and 5
+
+app.get('/welcome',function(req,res){
+    var name = req.query.username;
+    res.render('welcome', {msg: name});
+});
+
+// add user into my database
+app.get("/signup", (req, res) => {
+    res.render("signUpForm")
+})
+
+app.post('/signup', async function(req, res){
+    var username = req.body.username_in;
+    var password = req.body.password_in;
+    var track = req.body.track_in;
+    var grade = req.body.grade_in;
+    var newUser = {username, password, track, grade};
+
+    // Hash the password
+    var hashedPassword = await bcrypt.hash(password, 10);
+
+    // Check if the user already exists
+    database.query("SELECT * FROM bach_users WHERE username = ?", [username], function(err, result, fields){
+        if (err) {
+            res.send("An error occurred");
+            console.error(err);
+        } else {
+            if (result.length > 0) {
+                res.send("User already exists");
+                console.log(username, "already exists!");
+            } else {
+                // Insert the new user into the database
+                database.query("INSERT INTO bach_users (username, password, track, grade) VALUES (?, ?, ?, ?)", [username, password, track, grade], function(err, result, fields) {
+                    if (err) {
+                        res.send("An error occurred");
+                        console.error(err);
+                    } else {
+                        console.log('User signed up successfully:', username, password, result);
+                        res.send('Signup successful!');
+                    }
+                });
+            }
+        }
+    });
+});
+
 app.get("/register", (req, res) => {
     res.render("register")
 })
@@ -96,58 +142,12 @@ app.post('/register', async function(req, res){
                 console.log(username, "just log in!")
             } else {
                 res.send("No such user found");
+                console.log(result);
             }
         }
     });
     console.log(username, password);
 });
-
-app.get('/welcome',function(req,res){
-    var name = req.query.username;
-    res.render('welcome', {msg: name});
-});
-
-// add user into my database
-app.get("/signin", (req, res) => {
-    res.render("signInForm")
-})
-
-app.post('/signin', async function(req, res){
-    var username = req.body.username_in;
-    var password = req.body.password_in;
-    var track = req.body.track_in;
-    var grade = req.body.grade_in;
-
-
-    // Hash the password
-    var hashedPassword = await bcrypt.hash(password, 10);
-
-    database.query("SELECT * FROM bach_users WHERE username = ? AND password = ? AND track = ? AND grade = ?", [username, password, track, grade], function (error, result, fields){
-        if (error) {
-            res.send("An error occurred");
-            console.error(error);
-        } else {
-            if (result.length > 0) {
-                res.send("user exist");
-                console.log(username, "just log in!")
-            } else {
-                database.query("INSERT INTO bach_users VALUES (?, ?, ?, ?)", [username, password, track, grade],function (error, result, fields){
-                    if (error) {
-                        res.send("An error occurred");
-                        console.error(error);
-                    } else {
-                        if (result.length > 0) {
-                            res.render('newUser');
-                            console.log(username, "just Sign in!");
-                        }
-                    }
-                });
-            }
-        }
-    });
-    console.log(username, password);
-});
-
 
 //Challenge 6
 app.get('/query', function(req, res){
