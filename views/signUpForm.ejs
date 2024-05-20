@@ -9,9 +9,8 @@
 
         <div class="form__div">
             <input type="text" id = "inputValue" class="form__input" placeholder=" " name = 'username_in'>
-            <label for="" class="form__label">Email</label>
+            <label for="" class="form__label" id = "emailLable">Email</label>            
         </div>
-
         <div class="form__div">
             <input type="password" class="form__input" placeholder=" " name = 'password_in'>
             <label for="" class="form__label">Password</label>
@@ -38,3 +37,26 @@
         <input class="form__button" type="submit" value = 'Sign In'>
     </form>
 </div>
+<script>
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+const emailInput = document.getElementById("inputValue");
+const emailValidationMessage = document.getElementById("emailLable");
+//const emailInputForm = documenr.getElementById("inputValue")
+
+emailInput.addEventListener("input", function() {
+    const email = emailInput.value.trim();
+
+    if ((isValidEmail(email))) {
+        console.log("Email is valid");
+    } else {
+        emailValidationMessage.textContent = "Email is not valid";
+        emailValidationMessage.style.color = "red";
+        emailInput.style.borderColor = "red";
+        console.log("Email is not valid");
+    }
+});
+    </script>

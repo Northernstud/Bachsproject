@@ -9,6 +9,7 @@ var bodyParser = require('body-parser');
 var encoder = bodyParser.urlencoded();
 var bcrypt = require('bcrypt');
 var multer  = require('multer')
+const fse = require('fs-extra');
 
 app.use(express.static(path.join(__dirname, 'publish')));
 app.use(express.static(path.join(__dirname, 'views')));
@@ -72,7 +73,7 @@ app.get('/count', function(req,res){
     });
 });
 
-//Challenge 4 and 5
+//Challenge 4
 
 app.get('/welcome',function(req,res){
     var name = req.query.username;
@@ -111,7 +112,7 @@ app.post('/signup', async function(req, res){
                         console.error(err);
                     } else {
                         console.log('User signed up successfully:', username, password, result);
-                        res.send('Signup successful!');
+                        res.render('successful', {msg: username});
                     }
                 });
             }
@@ -123,6 +124,7 @@ app.get("/register", (req, res) => {
     res.render("register")
 })
 app.post('/register', async function(req, res){
+    console.log("request received!");
     var username = req.body.username;
     var password = req.body.password;
     var track = req.body.track;
@@ -148,6 +150,11 @@ app.post('/register', async function(req, res){
     });
     console.log(username, password);
 });
+
+//Challange 5
+
+
+
 
 //Challenge 6
 app.get('/query', function(req, res){
@@ -183,14 +190,48 @@ app.post('/query', async function(req, res){
 
 
 //Challenge 7
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './uploads');
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+});
+const upload = multer({ storage: storage });
 
-app.get('/upload',function(req,res){
+// Render the file upload form
+app.get('/upload', function (req, res) {
     res.render('file');
 });
 
-var upload = multer({ dest: 'public/' });
-app.post('/api/upload', upload.single('file'), function (req, res) {
-    res.send('Uploaded successfully!');
+app.post('/upload', upload.single('filename'), function (req, res) {
+    console.log("File uploaded:", req.file);
+    res.send("File uploaded successfully!");
 });
+
+// Handle file approval (move uploaded file to DataDir)
+app.post('/approve', function (req, res) {
+    fse.readdir('./uploads', function (err, files) {
+        if (err) {
+            console.error(err);
+            res.send("Error occurred while reading files");
+        } else if (files.length === 0) {
+            res.send("No files to approve");
+        } else {
+            const filename = files[0]; // Get the first file in uploadFiles folder
+            fse.move('./uploads/' + filename, './DataDir/' + filename, function (err) {
+                if (err) {
+                    console.error(err);
+                    res.send("Error occurred while moving file");
+                } else {
+                    console.log('File moved successfully!');
+                    res.send("File moved successfully!");
+                }
+            });
+        }
+    });
+});
+
 
 app.listen(3008, () => console.log('Listenning at 3008'))

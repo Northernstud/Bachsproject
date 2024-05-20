@@ -1,15 +1,22 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
 </head>
 <body>
-    <form action="/api/upload" method="post" enctype="multipart/form-data">
-        <input type = "file" name = "file" />
-        <input type = "submit" value = "Submit">
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="filename" />
+        <button type="submit" name="action" value="submit">Submit</button>
     </form>
+    <form action="/approve" method="post">
+        <button type="submit" name="action" value="approve">Approve</button>
+    </form>
+    <form action="/upload" method="get">
+        <button type="submit" name="action" value="clear">Clear</button>
+    </form>
+    <a href="/">Cancel</a>
 </body>
+</html>
 </html>
