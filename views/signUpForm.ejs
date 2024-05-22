@@ -4,7 +4,7 @@
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <div class="l-form">
-    <form action="/signup" class="form" id = "loginForm" method = "POST">
+    <form action = "signup" onsubmit="return validateForm()" class="form" id = "loginForm" method = "POST">
         <h1 class="form__title">NA Sign Up</h1>
 
         <div class="form__div">
@@ -12,8 +12,8 @@
             <label for="" class="form__label" id = "emailLable">Email</label>            
         </div>
         <div class="form__div">
-            <input type="password" class="form__input" placeholder=" " name = 'password_in'>
-            <label for="" class="form__label">Password</label>
+            <input id = "password" type="password" class="form__input" placeholder=" " name = 'password_in'>
+            <label id = "passwordLable" for="" class="form__label">Password</label>
         </div>
 
         <div class="form__div">
@@ -34,7 +34,7 @@
             </select>
             <label class="form__label">Choose a gade:</label>
         </div>
-        <input class="form__button" type="submit" value = 'Sign In'>
+        <button type="submit" class="form__button">Sign Up</button>
     </form>
 </div>
 <script>
@@ -51,6 +51,9 @@ emailInput.addEventListener("input", function() {
     const email = emailInput.value.trim();
 
     if ((isValidEmail(email))) {
+        emailValidationMessage.textContent = "Email";
+        emailValidationMessage.style.color = "#1A73E8";
+        emailInput.style.borderColor = "#1A73E8";
         console.log("Email is valid");
     } else {
         emailValidationMessage.textContent = "Email is not valid";
@@ -59,4 +62,16 @@ emailInput.addEventListener("input", function() {
         console.log("Email is not valid");
     }
 });
+
+function validateForm() {
+            var passwordInput = document.getElementById("password").value;
+            var passwordLabel = document.getElementById("passwordLabel");
+
+            if (passwordInput === "") {
+                passwordLabel.textContent = "Password is required";
+                passwordLabel.style.color = "red";
+                return false; // Prevent form submission
+            }
+            return true; // Allow form submission
+}
     </script>
