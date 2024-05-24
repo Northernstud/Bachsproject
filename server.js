@@ -39,6 +39,14 @@ var usersInfo = mysql.createConnection({
     table: 'bach_countries',
 })
 
+var dropDown = mysql.createConnection({
+    host: '10.11.90.15',
+    port: '3306',
+    user: 'AppUser',
+    password: 'Special888%',
+    database: 'Study',
+    table: 'bach_cities',
+})
 
 
 database.connect((err) => { // This creates the connection
@@ -48,6 +56,10 @@ database.connect((err) => { // This creates the connection
 usersInfo.connect((err) => { // This creates the connection
     if (err) throw err;
     else console.log('Table bach_users is connected!');
+});
+dropDown.connect((err) => { // This creates the connection
+    if (err) throw err;
+    else console.log('Table bach_cities is connected!');
 });
 
 // Challenge 1
@@ -95,6 +107,10 @@ app.post('/signup', async function(req, res){
     // Hash the password
     var hashedPassword = await bcrypt.hash(password, 10);
 
+    if (password === "") {
+        res.status(400).send("You did not enter the password!");
+        return; // Stop further execution
+    }
     // Check if the user already exists
     database.query("SELECT * FROM bach_users WHERE username = ?", [username], function(err, result, fields){
         if (err) {
@@ -120,10 +136,10 @@ app.post('/signup', async function(req, res){
     });
 });
 
-app.get("/register", (req, res) => {
-    res.render("register")
+app.get("/login", (req, res) => {
+    res.render("login")
 })
-app.post('/register', async function(req, res){
+app.post('/login', async function(req, res){
     console.log("request received!");
     var username = req.body.username;
     var password = req.body.password;
@@ -152,8 +168,37 @@ app.post('/register', async function(req, res){
 });
 
 //Challange 5
+app.get('/dropDown', function(req, res, next){
+    dropDown.query('SELECT DISTINCT country FROM bach_cities ORDER BY country ASC', function(error, data){
+        res.render('dropDown', { title: 'Express', country_data : data });
+    });
+});
 
+app.get('/get_data', function(request, response, next){
 
+    var type = request.query.type;
+
+    var search_query = request.query.parent_value;
+
+    if(type == 'load_state')
+    {
+        var query = `
+        SELECT DISTINCT state AS Data FROM country_state_city 
+        WHERE country = '${search_query}' 
+        ORDER BY state ASC
+        `;
+    }
+
+    dropDown.query(query, function(error, data){
+        var data_arr = [];
+
+        data.forEach(function(row){
+            data_arr.push(row.Data);
+        });
+
+        response.json(data_arr);
+    });
+});
 
 
 //Challenge 6
