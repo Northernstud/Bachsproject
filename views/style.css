@@ -114,3 +114,6 @@ h1 {
 .form__input:focus {
   border: 2px solid var(--first-color);
 }
+.error {
+  border: 2px solid red;
+}

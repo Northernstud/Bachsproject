@@ -10,6 +10,7 @@ var encoder = bodyParser.urlencoded();
 var bcrypt = require('bcrypt');
 var multer  = require('multer')
 const fse = require('fs-extra');
+const cors = require('cors');
 
 app.use(express.static(path.join(__dirname, 'publish')));
 app.use(express.static(path.join(__dirname, 'views')));
@@ -20,6 +21,10 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors({
+    origin: '*',
+    credentials: true
+}));
 
 var database = mysql.createConnection({
     host: '10.11.90.15',
@@ -137,7 +142,8 @@ app.post('/signup', async function(req, res){
 });
 
 app.get("/login", (req, res) => {
-    res.render("login")
+    console.log("Yees!");
+    // res.render("login")
 })
 app.post('/login', async function(req, res){
     console.log("request received!");
