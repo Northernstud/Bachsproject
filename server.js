@@ -133,7 +133,7 @@ app.post('/signup', async function(req, res){
                         console.error(err);
                     } else {
                         console.log('User signed up successfully:', username, password, result);
-                        res.render('successful', {msg: username});
+                        res.render('successful');
                     }
                 });
             }
@@ -141,9 +141,14 @@ app.post('/signup', async function(req, res){
     });
 });
 
-app.get("/login", (req, res) => {
+app.get("/test", (req, res) => {
     console.log("Yees!");
-    // res.render("login")
+    res.json({message: "received"})
+})
+
+
+app.get("/login", (req, res) => {
+    res.render("login")
 })
 app.post('/login', async function(req, res){
     console.log("request received!");
@@ -225,17 +230,35 @@ app.post('/query', async function(req, res){
     var username = req.body.username_query;
     var track = req.body.track_query;
     var grade = req.body.grade_query;
-    var query = 'SELECT * FROM bach_users WHERE username = ? OR track = ? OR grade = ?';
 
-    database.query(query, [username, track, grade], function (error, result, fields){
+    var conditions = [];
+    var values = [];
+
+    if (username) {
+        conditions.push('username = ?');
+        values.push(username);
+    }
+    if (track) {
+        conditions.push('track = ?');
+        values.push(track);
+    }
+    if (grade) {
+        conditions.push('grade = ?');
+        values.push(grade);
+    }
+
+    var query = 'SELECT * FROM bach_users';
+    if (conditions.length > 0) {
+        query += ' WHERE ' + conditions.join(' AND ');
+    }
+
+    database.query(query, values, function (error, result, fields){
         if (error) {
-            res.send("An error occurred");
             console.error(error);
-        } else {
-            res.render('query', {data: result}); // Render 'resquery.ejs' and pass data to it
+            return res.status(500).send("An error occurred");
         }
-    })
-    console.log(username, track, grade);
+        res.render('query', {data: result});
+    });
 });
 
 

@@ -8,7 +8,7 @@
         <h1 class="form__title">NA Sign Up</h1>
 
         <div class="form__div">
-            <input type="text" id = "inputValue" class="form__input" placeholder=" " name = 'username_in'>
+            <input type="text" id = "inputValue" class="form__input" placeholder=" " name = 'username_in' required oninput="checkEmail()">
             <label for="" class="form__label" id = "emailLable">Email</label>            
         </div>
         <div class="form__div">
@@ -34,7 +34,7 @@
             </select>
             <label class="form__label">Choose a gade:</label>
         </div>
-        <button type="submit" class="form__button">Sign Up</button>
+        <button id = "button" type="submit" class="form__button">Sign Up</button>
     </form>
 </div>
 <script>
@@ -45,22 +45,25 @@ function isValidEmail(email) {
 
 const emailInput = document.getElementById("inputValue");
 const emailValidationMessage = document.getElementById("emailLable");
+const submitButton = document.getElementById("button");
 //const emailInputForm = documenr.getElementById("inputValue")
 
 emailInput.addEventListener("input", function() {
     const email = emailInput.value.trim();
 
     if (!(isValidEmail(email))) {
+        event.preventDefault()
         emailValidationMessage.textContent = "Email is not valid";
         emailValidationMessage.style.color = "red";
         emailInput.style.borderColor = "red";
         console.log("Email is not valid");
-        event.preventDefault()
+        submitButton.disabled = true;
     } else {
         emailValidationMessage.textContent = "Email";
         emailValidationMessage.style.color = "#1A73E8";
         emailInput.style.borderColor = "#1A73E8";
         console.log("Email is valid");
+        submitButton.disabled = false;
     }
 });
 
@@ -74,4 +77,5 @@ function checkPassword() {
         passwordInput.classList.remove("error");
     }
 }
+
 </script>
